@@ -1,16 +1,15 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# スコアを計算しやすいように整える
 points = ARGV[0].split(',')
 points.map! { |point| point.gsub('X', '10').to_i }
-# 必要な変数を定義する
+
 score = 0
 shot = 0
 flame = 1
 previous_point = 0
 last_flame = 10
-# スコアを計算
+
 points.each_with_index do |point, index|
   shot += 1
   if flame != last_flame
