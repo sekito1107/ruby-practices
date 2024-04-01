@@ -11,7 +11,6 @@ LAST_FLAME = 10
 
 points.each_with_index do |point, index|
   shot += 1
-  # binding.break
   if flame == LAST_FLAME
     score += point
   else
