@@ -1,25 +1,29 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-points = ARGV[0].split(',')
-points.map! { |point| point.gsub('X', '10').to_i }
+points = ARGV[0].gsub('X', '10').split(',').map(&:to_i)
 
 score = 0
 shot = 0
 flame = 1
 previous_point = 0
-last_flame = 10
+LAST_FLAME = 10
 
 points.each_with_index do |point, index|
   shot += 1
-  if flame != last_flame
+  if flame == LAST_FLAME
+    score += point
+  else
     if point == 10 && shot == 1
-      score += 10 + points[index.next] + points[index.next.next]
+      score += 10 + points[index + 1] + points[index + 2]
       shot += 1
     elsif previous_point + point == 10
-      score += 10 + points[index.next]
+      score += 10 + points[index + 1]
     elsif shot == 2
       score += previous_point + point
+      flame += 1
+      shot = 0
+      previous_point = 0
     else
       previous_point = point
     end
@@ -30,7 +34,6 @@ points.each_with_index do |point, index|
       next
     end
   end
-  score += point if flame == last_flame
 end
 
 puts score
