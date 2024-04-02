@@ -2,9 +2,7 @@
 # frozen_string_literal: true
 
 require 'pathname'
-require 'debug'
 DISPLAY_COLUMNS_COUNT = 3
-DISPLAY_WIDTH = 18
 
 def main
   argument_type = argument_parse(ARGV[0]) if ARGV[0]
@@ -21,9 +19,9 @@ def main
     directory_files = Dir.glob('*')
   end
 
-  row_size = calculate_row_size(directory_files)
-  display_data = create_display_data(row_size, directory_files)
-  display_directory_results(row_size, display_data)
+  rows_count = calculate_display_rows(directory_files)
+  formatted_deta = create_formatted_deta(rows_count, directory_files)
+  display_directory_results(rows_count, formatted_deta)
 end
 
 def argument_parse(argument)
@@ -45,20 +43,20 @@ def display_file_results(file_path)
   puts specified_path
 end
 
-def calculate_row_size(directory_files)
+def calculate_display_rows(directory_files)
   (directory_files.size + DISPLAY_COLUMNS_COUNT - 1) / DISPLAY_COLUMNS_COUNT - 1
 end
 
-def create_display_data(row_size, directory_files)
-  directory_files.each_slice(row_size + 1).to_a
+def create_formatted_deta(rows_count, directory_files)
+  directory_files.each_slice(rows_count + 1).to_a
 end
 
-def display_directory_results(row_size, display_data)
-  (row_size + 1).times do |row|
+def display_directory_results(rows_count, formatted_deta)
+  (rows_count + 1).times do |row|
     DISPLAY_COLUMNS_COUNT.times do |col|
-      wide_chars_count = count_characters(display_data[col][row]) || 0
-      max_string_length = calc_string_length(display_data)
-      print display_data[col][row].to_s.ljust(max_string_length + 1 - wide_chars_count)
+      wide_chars_count = count_characters(formatted_deta[col][row]) || 0
+      display_width = calc_display_width(formatted_deta)
+      print formatted_deta[col][row].to_s.ljust(display_width + 1 - wide_chars_count)
     end
     puts
   end
@@ -69,8 +67,8 @@ def count_characters(file_name)
   file_name.each_char.count { |char| char.bytesize > 1 } if !!(file_name =~ /[^[:ascii:]]/)
 end
 
-def calc_string_length(display_data)
-  display_data.flatten.map { |str| str.each_char.map { |c| c.bytesize > 1 ? 2 : 1 }.sum }.max
+def calc_display_width(formatted_deta)
+  formatted_deta.flatten.map { |str| str.each_char.map { |c| c.bytesize > 1 ? 2 : 1 }.sum }.max
 end
 
 main
