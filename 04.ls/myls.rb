@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require 'pathname'
+require 'debug'
 DISPLAY_COLUMNS_COUNT = 3
 DISPLAY_WIDTH = 18
 
@@ -56,7 +57,8 @@ def display_directory_results(row_size, display_data)
   (row_size + 1).times do |row|
     DISPLAY_COLUMNS_COUNT.times do |col|
       wide_chars_count = count_characters(display_data[col][row]) || 0
-      print display_data[col][row].to_s.ljust(DISPLAY_WIDTH - wide_chars_count)
+      max_string_length = calc_string_length(display_data)
+      print display_data[col][row].to_s.ljust(max_string_length + 1 - wide_chars_count)
     end
     puts
   end
@@ -65,6 +67,10 @@ end
 
 def count_characters(file_name)
   file_name.each_char.count { |char| char.bytesize > 1 } if !!(file_name =~ /[^[:ascii:]]/)
+end
+
+def calc_string_length(display_data)
+  display_data.flatten.map { |str| str.each_char.map { |c| c.bytesize > 1 ? 2 : 1 }.sum }.max
 end
 
 main
