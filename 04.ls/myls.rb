@@ -5,42 +5,51 @@ require 'pathname'
 DISPLAY_COLUMNS_COUNT = 3
 DISPLAY_WIDTH = 18
 
-def sorting_work
-  if ARGV[0]
-    pathname = Pathname.new(ARGV[0])
-    if pathname.directory?
-      calculate_array_size(Dir.glob("#{pathname}/*").map(&File.method(:basename)))
-    elsif pathname.file?
-      if pathname.to_s[0] == '~'
-        display_file_results(File.expand_path(pathname))
-      else
-        display_file_results(pathname)
-      end
-    else
-      error_message = "'#{pathname}' にアクセスできません：そのようなファイルやディレクトリはありません"
-      display_error_message(error_message)
-    end
-    return
-  end
-  calculate_array_size(Dir.glob('*'))
-end
+def main
+  argument_type = argument_parse(ARGV[0]) if ARGV[0]
+  directory_files = []
 
-def calculate_array_size(current_directory_files)
-  directory_size = current_directory_files.size
-  array_size = if (directory_size % DISPLAY_COLUMNS_COUNT).zero?
-                 directory_size / DISPLAY_COLUMNS_COUNT - 1
-               else
-                 directory_size / DISPLAY_COLUMNS_COUNT
-               end
-  create_display_data(array_size, current_directory_files)
-end
-
-def create_display_data(array_size, current_directory_files)
-  display_data = []
-  current_directory_files.each_slice(array_size + 1) do |slice_data|
-    display_data << slice_data
+  case argument_type
+  when :invalid
+    display_error_message
+  when :file_path
+    display_file_results(ARGV[0])
+  when :directory_path
+    directory_files = Dir.glob("#{ARGV[0]}/*").map(&File.method(:basename))
+  else
+    directory_files = Dir.glob('*')
   end
+
+  array_size = calculate_array_size(directory_files)
+  display_data = create_display_data(array_size, directory_files)
   display_directory_results(array_size, display_data)
+end
+
+def argument_parse(argument)
+  if File.directory?(argument)
+    :directory_path
+  elsif File.file?(argument)
+    :file_path
+  else
+    :invalid
+  end
+end
+
+def display_error_message
+  puts "'#{ARGV[0]}' にアクセスできません：そのようなファイルやディレクトリはありません"
+end
+
+def display_file_results(file_path)
+  specified_path = file_path[0] == '~' ? Pathname.new(file_path).expand_path('~') : file_path
+  puts specified_path
+end
+
+def calculate_array_size(directory_files)
+  (directory_files.size + DISPLAY_COLUMNS_COUNT - 1) / DISPLAY_COLUMNS_COUNT - 1
+end
+
+def create_display_data(array_size, directory_files)
+  directory_files.each_slice(array_size + 1).to_a
 end
 
 def display_directory_results(array_size, display_data)
@@ -55,19 +64,9 @@ def display_directory_results(array_size, display_data)
 end
 
 def count_characters(file_name)
-  file_name.each_char.count { |char| char.bytesize > 1 } if contains_wide_chars?(file_name)
+  return 0 unless file_name
+
+  file_name.each_char.count { |char| char.bytesize > 1 } if !!(file_name =~ /[^[:ascii:]]/)
 end
 
-def contains_wide_chars?(file_name)
-  !!(file_name =~ /[^[:ascii:]]/)
-end
-
-def display_file_results(file_path)
-  puts file_path
-end
-
-def display_error_message(error_message)
-  puts error_message
-end
-
-sorting_work
+main
