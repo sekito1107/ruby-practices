@@ -20,9 +20,9 @@ def main
     directory_files = Dir.glob('*')
   end
 
-  array_size = calculate_array_size(directory_files)
-  display_data = create_display_data(array_size, directory_files)
-  display_directory_results(array_size, display_data)
+  row_size = calculate_row_size(directory_files)
+  display_data = create_display_data(row_size, directory_files)
+  display_directory_results(row_size, display_data)
 end
 
 def argument_parse(argument)
@@ -44,16 +44,16 @@ def display_file_results(file_path)
   puts specified_path
 end
 
-def calculate_array_size(directory_files)
+def calculate_row_size(directory_files)
   (directory_files.size + DISPLAY_COLUMNS_COUNT - 1) / DISPLAY_COLUMNS_COUNT - 1
 end
 
-def create_display_data(array_size, directory_files)
-  directory_files.each_slice(array_size + 1).to_a
+def create_display_data(row_size, directory_files)
+  directory_files.each_slice(row_size + 1).to_a
 end
 
-def display_directory_results(array_size, display_data)
-  (array_size + 1).times do |row|
+def display_directory_results(row_size, display_data)
+  (row_size + 1).times do |row|
     DISPLAY_COLUMNS_COUNT.times do |col|
       wide_chars_count = count_characters(display_data[col][row]) || 0
       print display_data[col][row].to_s.ljust(DISPLAY_WIDTH - wide_chars_count)
@@ -64,8 +64,6 @@ def display_directory_results(array_size, display_data)
 end
 
 def count_characters(file_name)
-  return 0 unless file_name
-
   file_name.each_char.count { |char| char.bytesize > 1 } if !!(file_name =~ /[^[:ascii:]]/)
 end
 
