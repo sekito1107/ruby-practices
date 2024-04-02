@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'pathname'
 DISPLAY_COLUMNS_COUNT = 3
 
 def main
@@ -36,11 +35,13 @@ end
 
 def display_error_message
   puts "'#{ARGV[0]}' にアクセスできません：そのようなファイルやディレクトリはありません"
+  exit
 end
 
 def display_file_results(file_path)
-  specified_path = file_path[0] == '~' ? Pathname.new(file_path).expand_path('~') : file_path
+  specified_path = file_path[0] == '~' ? File.expand_path(file_path) : file_path
   puts specified_path
+  exit
 end
 
 def calculate_display_rows(directory_files)
