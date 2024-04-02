@@ -68,7 +68,6 @@ def count_characters(file_name)
   file_name.each_char.count { |char| char.bytesize > 1 } if !!(file_name =~ /[^[:ascii:]]/)
 end
 
-
 def calculate_string_width(formatted_data)
   formatted_data.flatten.map do |str|
     str.each_char.map { |c| c.bytesize > 1 ? 2 : 1 }.sum
