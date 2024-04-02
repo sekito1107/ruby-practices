@@ -52,10 +52,10 @@ def create_formatted_deta(rows_count, directory_files)
 end
 
 def display_directory_results(rows_count, formatted_deta)
+  display_width = calc_display_width(formatted_deta)
   (rows_count + 1).times do |row|
     DISPLAY_COLUMNS_COUNT.times do |col|
       wide_chars_count = count_characters(formatted_deta[col][row]) || 0
-      display_width = calc_display_width(formatted_deta)
       print formatted_deta[col][row].to_s.ljust(display_width + 1 - wide_chars_count)
     end
     puts
