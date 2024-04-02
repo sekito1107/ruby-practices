@@ -57,7 +57,7 @@ def display_directory_results(rows_count, formatted_deta)
   (rows_count + 1).times do |row|
     DISPLAY_COLUMNS_COUNT.times do |col|
       wide_chars_count = count_characters(formatted_deta[col][row]) || 0
-      print formatted_deta[col][row].to_s.ljust(max_string_width + 1 - wide_chars_count)
+      print formatted_deta[col][row].to_s.ljust(max_string_width + 2 - wide_chars_count)
     end
     puts
   end
