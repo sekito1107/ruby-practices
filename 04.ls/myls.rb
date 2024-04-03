@@ -45,23 +45,22 @@ def display_file_results(file_path)
 end
 
 def calculate_display_rows(directory_files)
-  (directory_files.size + DISPLAY_COLUMNS_COUNT - 1) / DISPLAY_COLUMNS_COUNT - 1
+  (directory_files.size + DISPLAY_COLUMNS_COUNT - 1) / DISPLAY_COLUMNS_COUNT
 end
 
 def create_formatted_deta(rows_count, directory_files)
-  directory_files.each_slice(rows_count + 1).to_a
+  directory_files.each_slice(rows_count).to_a
 end
 
 def display_directory_results(rows_count, formatted_deta)
   max_string_width = calculate_string_width(formatted_deta)
-  (rows_count + 1).times do |row|
+  rows_count.times do |row|
     DISPLAY_COLUMNS_COUNT.times do |col|
       wide_chars_count = count_characters(formatted_deta[col][row]) || 0
       print formatted_deta[col][row].to_s.ljust(max_string_width + 2 - wide_chars_count)
     end
     puts
   end
-  puts
 end
 
 def count_characters(file_name)
@@ -75,3 +74,5 @@ def calculate_string_width(formatted_data)
 end
 
 main
+
+
