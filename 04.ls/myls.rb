@@ -74,5 +74,3 @@ def count_characters(file_name)
 end
 
 main
-
-
