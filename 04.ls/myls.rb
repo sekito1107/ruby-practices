@@ -53,20 +53,22 @@ def create_formatted_deta(rows_count, directory_files)
 end
 
 def display_directory_results(rows_count, formatted_deta)
-  max_string_width = calculate_string_width(formatted_deta)
+  max_string_widths = calculate_string_widths(formatted_deta)
   rows_count.times do |row|
     DISPLAY_COLUMNS_COUNT.times do |col|
       wide_chars_count = count_characters(formatted_deta[col][row]) || 0
-      print formatted_deta[col][row].to_s.ljust(max_string_width + 2 - wide_chars_count)
+      print formatted_deta[col][row].to_s.ljust((max_string_widths[col]) + 2 - wide_chars_count)
     end
     puts
   end
 end
 
-def calculate_string_width(formatted_data)
-  formatted_data.flatten.map do |str|
-    str.each_char.map { |c| c.bytesize > 1 ? 2 : 1 }.sum
-  end.max
+def calculate_string_widths(formatted_data)
+  formatted_data.map do |col_data|
+    col_data.map do |str|
+      str.each_char.map { |c| c.bytesize > 1 ? 2 : 1 }.sum
+    end.max
+  end
 end
 
 def count_characters(file_name)
