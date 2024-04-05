@@ -18,7 +18,7 @@ def main
     directory_files = Dir.glob('*')
   end
 
-  rows_count = calculate_display_rows(directory_files)
+  rows_count = calculate_row_count(directory_files)
   formatted_deta = create_formatted_deta(rows_count, directory_files)
   display_directory_results(rows_count, formatted_deta)
 end
@@ -44,7 +44,7 @@ def display_file_results(file_path)
   exit
 end
 
-def calculate_display_rows(directory_files)
+def calculate_row_count(directory_files)
   (directory_files.size + DISPLAY_COLUMNS_COUNT - 1) / DISPLAY_COLUMNS_COUNT
 end
 
@@ -53,17 +53,17 @@ def create_formatted_deta(rows_count, directory_files)
 end
 
 def display_directory_results(rows_count, formatted_deta)
-  max_string_widths = calculate_string_widths(formatted_deta)
+  max_column_widths = calculate_max_column_widths(formatted_deta)
   rows_count.times do |row|
     DISPLAY_COLUMNS_COUNT.times do |col|
-      wide_chars_count = count_characters(formatted_deta[col][row]) || 0
-      print formatted_deta[col][row].to_s.ljust((max_string_widths[col]) + 2 - wide_chars_count)
+      wide_chars_count = count_multibyte_characters(formatted_deta[col][row]) || 0
+      print formatted_deta[col][row].to_s.ljust((max_column_widths[col]) + 2 - wide_chars_count)
     end
     puts
   end
 end
 
-def calculate_string_widths(formatted_data)
+def calculate_max_column_widths(formatted_data)
   formatted_data.map do |col_data|
     col_data.map do |str|
       str.each_char.map { |c| c.bytesize > 1 ? 2 : 1 }.sum
@@ -71,7 +71,7 @@ def calculate_string_widths(formatted_data)
   end
 end
 
-def count_characters(file_name)
+def count_multibyte_characters(file_name)
   file_name.each_char.count { |char| char.bytesize > 1 } if !!(file_name =~ /[^[:ascii:]]/)
 end
 
