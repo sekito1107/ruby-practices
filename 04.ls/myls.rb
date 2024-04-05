@@ -72,7 +72,5 @@ def calculate_max_column_widths(formatted_data)
 end
 
 def count_multibyte_characters(file_name)
-  file_name.each_char.count { |char| char.bytesize > 1 } if !!(file_name =~ /[^[:ascii:]]/)
+  file_name.each_char.count { |char| char.bytesize > 1 }
 end
-
-main
