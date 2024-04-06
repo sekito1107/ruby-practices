@@ -74,3 +74,5 @@ end
 def count_multibyte_characters(file_name)
   file_name.each_char.count { |char| char.bytesize > 1 }
 end
+
+main
