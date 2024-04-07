@@ -4,7 +4,7 @@
 DISPLAY_COLUMNS_COUNT = 3
 
 def main
-  argument_type = argument_parse(ARGV[0]) if ARGV[0]
+  argument_type = command_line_argument_type(ARGV[0]) if ARGV[0]
   directory_files = []
   case argument_type
   when :invalid
@@ -12,7 +12,7 @@ def main
   when :file_path
     display_file_results(ARGV[0])
   when :directory_path
-    directory_files = Dir.glob("#{ARGV[0]}/*").map(&File.method(:basename))
+    directory_files = Dir.glob("#{ARGV[0]}/*").map { File.basename(_1) }
   else
     directory_files = Dir.glob('*')
   end
@@ -24,7 +24,7 @@ def main
   display_directory_results(rows_count, formatted_deta)
 end
 
-def argument_parse(argument)
+def command_line_argument_type(argument)
   if File.directory?(argument)
     :directory_path
   elsif File.file?(argument)
