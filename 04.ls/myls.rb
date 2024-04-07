@@ -6,7 +6,6 @@ DISPLAY_COLUMNS_COUNT = 3
 def main
   argument_type = argument_parse(ARGV[0]) if ARGV[0]
   directory_files = []
-
   case argument_type
   when :invalid
     display_error_message
@@ -18,8 +17,10 @@ def main
     directory_files = Dir.glob('*')
   end
 
+  empty_file_result if directory_files.empty?
+
   rows_count = calculate_row_count(directory_files)
-  formatted_deta = create_formatted_deta(rows_count, directory_files)
+  formatted_deta = create_formatted_deta(directory_files)
   display_directory_results(rows_count, formatted_deta)
 end
 
@@ -45,11 +46,16 @@ def display_file_results(file_path)
 end
 
 def calculate_row_count(directory_files)
-  (directory_files.size + DISPLAY_COLUMNS_COUNT - 1) / DISPLAY_COLUMNS_COUNT
+  rows_count = (directory_files.size + DISPLAY_COLUMNS_COUNT - 1) / DISPLAY_COLUMNS_COUNT
+  rows_count.zero? ? 1 : rows_count
 end
 
-def create_formatted_deta(rows_count, directory_files)
-  directory_files.each_slice(rows_count).to_a
+def create_formatted_deta(directory_files)
+  formatted_data = Array.new(DISPLAY_COLUMNS_COUNT) { [] }
+  directory_files.each_with_index do |file, index|
+    formatted_data[index % DISPLAY_COLUMNS_COUNT] << file
+  end
+  formatted_data
 end
 
 def display_directory_results(rows_count, formatted_deta)
@@ -74,6 +80,11 @@ end
 def count_multibyte_characters(file_name)
   file_name ||= ''
   file_name.each_char.count { |char| char.bytesize > 1 }
+end
+
+def empty_file_result
+  print ''
+  exit
 end
 
 main
