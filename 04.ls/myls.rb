@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'debug'
 DISPLAY_COLUMNS_COUNT = 3
 
 def run
@@ -22,43 +21,46 @@ def run
 end
 
 def main(index, file_results, error_messages, empty_directories, sorted_directories)
-  argument_type = command_line_argument_type(ARGV[index]) if ARGV[index]
+  data_type = :directory_path
+  data_type = command_line_argument_type(ARGV[index]) if ARGV[index]
   sorted_directories[:directory_count] ||= 0
   sorted_directories[:directory_name] ||= []
-  case argument_type
+
+  case data_type
   when :invalid
     error_messages << create_error_messages(index)
-    return
+    nil
   when :file_path
     file_results << create_display_file_results(ARGV[index])
-    return
+    nil
   when :directory_path
-    directory_files = Dir.glob("#{ARGV[index]}/*").map { File.basename(_1) }
-    if directory_files.empty?
-      empty_directories << ARGV[index].to_s
-      return
-    end
-    sorted_directories[:directory_count] += 1
-    sorted_directories[:directory_name] << ARGV[index]
+    directory_files = create_directory_file(index, sorted_directories, empty_directories)
+    sorted_directories[:rows_count] ||= []
+    sorted_directories[:rows_count] << calculate_row_count(directory_files)
+    sorted_directories[:formatted_datas] ||= []
+    sorted_directories[:formatted_datas] << create_formatted_data(directory_files, sorted_directories)
+  end
+end
+
+def create_directory_file(index, sorted_directories, empty_directories)
+  directory_files = if ARGV[index]
+                      Dir.glob("#{ARGV[index]}/*").map { File.basename(_1) }
+                    else
+                      Dir.glob('*')
+                    end
+  if directory_files.empty?
+    empty_directories << ARGV[index].to_s
   else
-    directory_files = Dir.glob('*')
-    display_empty_message(empty_directories) if directory_files.empty?
     sorted_directories[:directory_count] += 1
     sorted_directories[:directory_name] << ARGV[index]
   end
-
-  sorted_directories[:rows_count] ||= []
-  sorted_directories[:rows_count] << calculate_row_count(directory_files)
-  sorted_directories[:formatted_datas] ||= []
-  sorted_directories[:formatted_datas] << create_formatted_data(directory_files, sorted_directories)
+  directory_files
 end
 
-def command_line_argument_type(argument)
-  if File.directory?(argument)
-    return if argument.empty?
-
+def command_line_argument_type(command_line_argument_data)
+  if File.directory?(command_line_argument_name)
     :directory_path
-  elsif File.file?(argument)
+  elsif File.file?(command_line_argument_name)
     :file_path
   else
     :invalid
@@ -85,28 +87,10 @@ def create_formatted_data(directory_files, sorted_directories)
   formatted_data
 end
 
-def calculate_max_column_widths(formatted_data)
-  formatted_data.map do |col_data|
-    col_data.map do |str|
-      str.each_char.map { |c| c.bytesize > 1 ? 2 : 1 }.sum
-    end.max
-  end
-end
-
-def count_multibyte_characters(file_name)
-  file_name ||= ''
-  file_name.each_char.count { |char| char.bytesize > 1 }
-end
-
-def empty_file_result
-  ''
-end
-
 def result_display(file_results, empty_directories, error_messages, sorted_directories, multiple_arguments_received)
   display_error_messages(error_messages) unless error_messages.empty?
   display_file_results(file_results, empty_directories, sorted_directories) unless file_results.empty?
   display_empty_message(empty_directories, sorted_directories, multiple_arguments_received) unless empty_directories.empty?
-  create_display_file_results(file_results) unless file_results.empty?
   display_directory_results(sorted_directories, multiple_arguments_received) unless sorted_directories.empty?
 end
 
@@ -120,14 +104,14 @@ def display_file_results(file_results, empty_directories, sorted_directories)
   puts if !sorted_directories.empty? || !empty_directories.empty?
 end
 
-def display_empty_message(empty_directories, sorted_directories, multiple_arguments_received: false)
+def display_empty_message(empty_directories, sorted_directories, multiple_arguments_received)
   unless multiple_arguments_received
     print ''
     exit
   end
   empty_directories.each.with_index do |directory_name, idx|
     puts "#{directory_name}:"
-    puts unless empty_directories.size == idx || sorted_directories.empty?
+    puts unless empty_directories.size - 1 == idx || sorted_directories.empty?
   end
 end
 
@@ -135,9 +119,7 @@ def display_directory_results(sorted_directories, multiple_arguments_received)
   sorted_directories[:directory_count].times do |directory_number|
     puts if directory_number.positive? && multiple_arguments_received
     puts "#{sorted_directories[:directory_name][directory_number]}:" if multiple_arguments_received
-
     max_column_widths = calculate_max_column_widths(sorted_directories[:formatted_datas][directory_number])
-
     sorted_directories[:rows_count][directory_number].times do |row|
       DISPLAY_COLUMNS_COUNT.times do |col|
         wide_chars_count = count_multibyte_characters(sorted_directories[:formatted_datas][directory_number][col][row]) || 0
@@ -146,6 +128,19 @@ def display_directory_results(sorted_directories, multiple_arguments_received)
       puts
     end
   end
+end
+
+def calculate_max_column_widths(formatted_data)
+  formatted_data.map do |col_data|
+    col_data.map do |str|
+      str.each_char.map { |c| c.bytesize > 1 ? 2 : 1 }.sum
+    end.max
+  end
+end
+
+def count_multibyte_characters(file_name)
+  file_name ||= ''
+  file_name.each_char.count { |char| char.bytesize > 1 }
 end
 
 run
