@@ -58,9 +58,9 @@ def create_directory_file(index, sorted_directories, empty_directories)
 end
 
 def command_line_argument_type(command_line_argument_data)
-  if File.directory?(command_line_argument_name)
+  if File.directory?(command_line_argument_data)
     :directory_path
-  elsif File.file?(command_line_argument_name)
+  elsif File.file?(command_line_argument_data)
     :file_path
   else
     :invalid
