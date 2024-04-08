@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
+
 DISPLAY_COLUMNS_COUNT = 3
 
 def run
@@ -27,10 +28,8 @@ def main(index, file_results, error_messages, empty_directories, sorted_director
   case data_type
   when :invalid
     error_messages << create_error_messages(index)
-    nil
   when :file_path
     file_results << create_display_file_results(ARGV[index])
-    nil
   when :directory_path
     directory_files = create_directory_file(index, sorted_directories, empty_directories)
     sorted_directories[:rows_count] ||= []
@@ -107,9 +106,9 @@ def display_empty_message(empty_directories, sorted_directories, multiple_argume
     print ''
     exit
   end
-  empty_directories.each.with_index do |directory_name, idx|
+  empty_directories.each.with_index do |directory_name, empty_index|
     puts "#{directory_name}:"
-    puts unless empty_directories.size - 1 == idx || sorted_directories.empty?
+    puts unless empty_directories.size - 1 == empty_index || sorted_directories.empty?
   end
 end
 
