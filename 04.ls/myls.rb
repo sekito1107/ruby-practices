@@ -1,31 +1,62 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require 'debug'
 DISPLAY_COLUMNS_COUNT = 3
 
-def main
-  argument_type = command_line_argument_type(ARGV[0]) if ARGV[0]
-  directory_files = []
-  case argument_type
-  when :invalid
-    display_error_message
-  when :file_path
-    display_file_results(ARGV[0])
-  when :directory_path
-    directory_files = Dir.glob("#{ARGV[0]}/*").map { File.basename(_1) }
-  else
-    directory_files = Dir.glob('*')
+def run
+  multiple_arguments_received = false
+  sorted_directories = {}
+  empty_directories = []
+  error_messages = []
+  file_results = []
+
+  main(0, file_results, error_messages, empty_directories, sorted_directories) if ARGV.empty?
+
+  ARGV.size.times do |index|
+    main(index, file_results, error_messages, empty_directories, sorted_directories)
   end
 
-  empty_file_result if directory_files.empty?
+  multiple_arguments_received = true if ARGV.size >= 2
+  result_display(file_results, empty_directories, error_messages, sorted_directories, multiple_arguments_received)
+end
 
-  rows_count = calculate_row_count(directory_files)
-  formatted_deta = create_formatted_deta(directory_files)
-  display_directory_results(rows_count, formatted_deta)
+def main(index, file_results, error_messages, empty_directories, sorted_directories)
+  argument_type = command_line_argument_type(ARGV[index]) if ARGV[index]
+  sorted_directories[:directory_count] ||= 0
+  sorted_directories[:directory_name] ||= []
+  case argument_type
+  when :invalid
+    error_messages << create_error_messages(index)
+    return
+  when :file_path
+    file_results << create_display_file_results(ARGV[index])
+    return
+  when :directory_path
+    directory_files = Dir.glob("#{ARGV[index]}/*").map { File.basename(_1) }
+    if directory_files.empty?
+      empty_directories << ARGV[index].to_s
+      return
+    end
+    sorted_directories[:directory_count] += 1
+    sorted_directories[:directory_name] << ARGV[index]
+  else
+    directory_files = Dir.glob('*')
+    display_empty_message(empty_directories) if directory_files.empty?
+    sorted_directories[:directory_count] += 1
+    sorted_directories[:directory_name] << ARGV[index]
+  end
+
+  sorted_directories[:rows_count] ||= []
+  sorted_directories[:rows_count] << calculate_row_count(directory_files)
+  sorted_directories[:formatted_datas] ||= []
+  sorted_directories[:formatted_datas] << create_formatted_data(directory_files, sorted_directories)
 end
 
 def command_line_argument_type(argument)
   if File.directory?(argument)
+    return if argument.empty?
+
     :directory_path
   elsif File.file?(argument)
     :file_path
@@ -34,15 +65,12 @@ def command_line_argument_type(argument)
   end
 end
 
-def display_error_message
-  puts "'#{ARGV[0]}' にアクセスできません：そのようなファイルやディレクトリはありません"
-  exit
+def create_error_messages(index)
+  "ls: '#{ARGV[index]}' にアクセスできません：そのようなファイルやディレクトリはありません"
 end
 
-def display_file_results(file_path)
-  specified_path = file_path[0] == '~' ? File.expand_path(file_path) : file_path
-  puts specified_path
-  exit
+def create_display_file_results(file_path)
+  file_path == '~' ? File.expand_path(file_path) : file_path
 end
 
 def calculate_row_count(directory_files)
@@ -50,23 +78,11 @@ def calculate_row_count(directory_files)
   rows_count.zero? ? 1 : rows_count
 end
 
-def create_formatted_deta(directory_files)
-  formatted_data = Array.new(DISPLAY_COLUMNS_COUNT) { [] }
-  directory_files.each_with_index do |file, index|
-    formatted_data[index % DISPLAY_COLUMNS_COUNT] << file
-  end
+def create_formatted_data(directory_files, sorted_directories)
+  row_count = sorted_directories[:rows_count][sorted_directories[:directory_count] - 1]
+  formatted_data = directory_files.each_slice(row_count).to_a
+  formatted_data << [''] while formatted_data.size < DISPLAY_COLUMNS_COUNT
   formatted_data
-end
-
-def display_directory_results(rows_count, formatted_deta)
-  max_column_widths = calculate_max_column_widths(formatted_deta)
-  rows_count.times do |row|
-    DISPLAY_COLUMNS_COUNT.times do |col|
-      wide_chars_count = count_multibyte_characters(formatted_deta[col][row]) || 0
-      print formatted_deta[col][row].to_s.ljust((max_column_widths[col]) + 2 - wide_chars_count)
-    end
-    puts
-  end
 end
 
 def calculate_max_column_widths(formatted_data)
@@ -83,8 +99,53 @@ def count_multibyte_characters(file_name)
 end
 
 def empty_file_result
-  print ''
-  exit
+  ''
 end
 
-main
+def result_display(file_results, empty_directories, error_messages, sorted_directories, multiple_arguments_received)
+  display_error_messages(error_messages) unless error_messages.empty?
+  display_file_results(file_results, empty_directories, sorted_directories) unless file_results.empty?
+  display_empty_message(empty_directories, sorted_directories, multiple_arguments_received) unless empty_directories.empty?
+  create_display_file_results(file_results) unless file_results.empty?
+  display_directory_results(sorted_directories, multiple_arguments_received) unless sorted_directories.empty?
+end
+
+def display_error_messages(error_messages)
+  error_messages.each { puts _1 }
+end
+
+def display_file_results(file_results, empty_directories, sorted_directories)
+  file_results.sort.each { print "#{_1}  " }
+  puts
+  puts if !sorted_directories.empty? || !empty_directories.empty?
+end
+
+def display_empty_message(empty_directories, sorted_directories, multiple_arguments_received: false)
+  unless multiple_arguments_received
+    print ''
+    exit
+  end
+  empty_directories.each.with_index do |directory_name, idx|
+    puts "#{directory_name}:"
+    puts unless empty_directories.size == idx || sorted_directories.empty?
+  end
+end
+
+def display_directory_results(sorted_directories, multiple_arguments_received)
+  sorted_directories[:directory_count].times do |directory_number|
+    puts if directory_number.positive? && multiple_arguments_received
+    puts "#{sorted_directories[:directory_name][directory_number]}:" if multiple_arguments_received
+
+    max_column_widths = calculate_max_column_widths(sorted_directories[:formatted_datas][directory_number])
+
+    sorted_directories[:rows_count][directory_number].times do |row|
+      DISPLAY_COLUMNS_COUNT.times do |col|
+        wide_chars_count = count_multibyte_characters(sorted_directories[:formatted_datas][directory_number][col][row]) || 0
+        print sorted_directories[:formatted_datas][directory_number][col][row].to_s.ljust((max_column_widths[col] || 0) + 2 - wide_chars_count)
+      end
+      puts
+    end
+  end
+end
+
+run
