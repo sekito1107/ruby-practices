@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
-
 DISPLAY_COLUMNS_COUNT = 3
 
 def run
@@ -25,7 +24,6 @@ def main(index, file_results, error_messages, empty_directories, sorted_director
   data_type = command_line_argument_type(ARGV[index]) if ARGV[index]
   sorted_directories[:directory_count] ||= 0
   sorted_directories[:directory_name] ||= []
-
   case data_type
   when :invalid
     error_messages << create_error_messages(index)
