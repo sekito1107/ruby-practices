@@ -33,7 +33,7 @@ def create_result_datas(command_line_argument, result_datas)
         result_datas[:directory_count] += 1
         result_datas[:sorted_directories] << create_sorted_directory(index, command_line_argument)
       when :file_path
-        result_datas[:file_results] << create_display_file_result(command_line_argument[index])
+        result_datas[:file_results] << command_line_argument[index]
       when :empty_directory
         result_datas[:empty_directories] << command_line_argument[index]
       when :invalid
@@ -71,10 +71,6 @@ def create_sorted_directory(index, command_line_argument)
     row_count:,
     formatted_datas:
   }
-end
-
-def create_display_file_result(file_path)
-  file_path == '~' ? File.expand_path(file_path) : file_path
 end
 
 def create_error_message(index, command_line_argument)
