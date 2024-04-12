@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
-require 'debug'
 
 DISPLAY_COLUMNS_COUNT = 3
 
@@ -109,8 +108,8 @@ def display_directory_results(sorted_directories, multiple_arguments_received)
 end
 
 def display_file_name(directory_name, need_new_line)
-    print "#{directory_name}:"
-    puts if need_new_line
+  print "#{directory_name}:"
+  puts if need_new_line
 end
 
 def calculate_max_column_widths(formatted_data)
