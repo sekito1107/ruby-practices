@@ -8,8 +8,7 @@ def run
 
   result_data = create_result_data(selected_files)
 
-  multiple_arguments_received = true if selected_files.size >= 2
-  result_display(result_data, multiple_arguments_received)
+  result_display(result_data, selected_files.size >= 2)
 end
 
 def create_result_data(selected_files)
@@ -76,10 +75,10 @@ def create_formatted_data(directory_files, row_count)
   formatted_data
 end
 
-def result_display(result_data, multiple_arguments_received)
+def result_display(result_data, multiple_files_received)
   display_error_messages(result_data[:error_messages]) unless result_data[:error_messages].empty?
   display_file_results(result_data[:file_results], !result_data[:sorted_directories].empty?) unless result_data[:file_results].empty?
-  display_directory_results(result_data[:sorted_directories], multiple_arguments_received) unless result_data[:sorted_directories].empty?
+  display_directory_results(result_data[:sorted_directories], multiple_files_received) unless result_data[:sorted_directories].empty?
 end
 
 def display_error_messages(error_messages)
@@ -91,9 +90,9 @@ def display_file_results(file_results, need_additional_line_break)
   puts if need_additional_line_break
 end
 
-def display_directory_results(sorted_directories, multiple_arguments_received)
+def display_directory_results(sorted_directories, multiple_files_received)
   sorted_directories.each.with_index do |directory_data, directory_number|
-    display_file_name(directory_data[:directory_name], !directory_data[:formatted_data].all?([''])) if multiple_arguments_received
+    display_file_name(directory_data[:directory_name], !directory_data[:formatted_data].all?([''])) if multiple_files_received
     max_column_widths = calculate_max_column_widths(directory_data[:formatted_data])
     directory_data[:row_count].times do |row|
       DISPLAY_COLUMNS_COUNT.times do |col|
@@ -120,9 +119,8 @@ def calculate_max_column_widths(formatted_data)
   end
 end
 
-def count_multibyte_characters(filenames)
-  filenames ||= ''
-  filenames.each_char.count { |char| char.bytesize > 1 }
+def count_multibyte_characters(filename)
+  (filename ||= '').each_char.count { |char| char.bytesize > 1 }
 end
 
 run
