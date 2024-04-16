@@ -1,8 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require 'debug'
-
 DISPLAY_COLUMNS_COUNT = 3
 
 def run
