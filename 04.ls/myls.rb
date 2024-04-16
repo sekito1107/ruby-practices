@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require 'debug'
+
 DISPLAY_COLUMNS_COUNT = 3
 
 def run
@@ -91,17 +93,18 @@ def display_file_results(file_results, need_additional_line_break)
 end
 
 def display_directory_results(sorted_directories, multiple_files_received)
+  result_data = []
   sorted_directories.each.with_index do |directory_data, directory_number|
     display_file_name(directory_data[:directory_name], !directory_data[:formatted_data].all?([''])) if multiple_files_received
     max_column_widths = calculate_max_column_widths(directory_data[:formatted_data])
-    directory_data[:row_count].times do |row|
-      DISPLAY_COLUMNS_COUNT.times do |col|
+    Array.new(directory_data[:row_count]) do |row|
+      result_data << Array.new(DISPLAY_COLUMNS_COUNT) do |col|
         target_data = directory_data[:formatted_data][col][row]
         wide_chars_count = count_multibyte_characters(target_data) || 0
-        print target_data.to_s.ljust((max_column_widths[col] || 0) + 2 - wide_chars_count)
-      end
-      puts
-    end
+        target_data.to_s.ljust((max_column_widths[col] || 0) + 2 - wide_chars_count)
+      end.join
+    end.join("\n")
+    puts result_data
     puts if sorted_directories.size - 1 != directory_number
   end
 end
@@ -120,7 +123,7 @@ def calculate_max_column_widths(formatted_data)
 end
 
 def count_multibyte_characters(filename)
-  (filename ||= '').each_char.count { |char| char.bytesize > 1 }
+  (filename || '').each_char.count { |char| char.bytesize > 1 }
 end
 
 run
