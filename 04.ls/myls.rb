@@ -95,8 +95,8 @@ def display_directory_results(sorted_directories, multiple_files_received)
   sorted_directories.each.with_index do |directory_data, directory_number|
     display_file_name(directory_data[:directory_name], !directory_data[:formatted_data].all?([''])) if multiple_files_received
     max_column_widths = calculate_max_column_widths(directory_data[:formatted_data])
-    Array.new(directory_data[:row_count]) do |row|
-      result_data << Array.new(DISPLAY_COLUMNS_COUNT) do |col|
+    result_data = Array.new(directory_data[:row_count]) do |row|
+      Array.new(DISPLAY_COLUMNS_COUNT) do |col|
         target_data = directory_data[:formatted_data][col][row]
         wide_chars_count = count_multibyte_characters(target_data) || 0
         target_data.to_s.ljust((max_column_widths[col] || 0) + 2 - wide_chars_count)
