@@ -91,7 +91,6 @@ def display_file_results(file_results, need_additional_line_break)
 end
 
 def display_directory_results(sorted_directories, multiple_files_received)
-  result_data = []
   sorted_directories.each.with_index do |directory_data, directory_number|
     display_file_name(directory_data[:directory_name], !directory_data[:formatted_data].all?([''])) if multiple_files_received
     max_column_widths = calculate_max_column_widths(directory_data[:formatted_data])
