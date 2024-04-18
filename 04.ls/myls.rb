@@ -15,7 +15,7 @@ def run
   result_display(result_data, selected_files.size >= 2)
 end
 
-def option_initialize
+def initialize_option
   options = {
     opt_a: false
   }
