@@ -1,23 +1,37 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require 'optparse'
+
 DISPLAY_COLUMNS_COUNT = 3
 
 def run
+  options = option_initialize
+
   selected_files = ARGV.empty? ? ['.'] : ARGV
 
-  result_data = create_result_data(selected_files)
+  result_data = create_result_data(selected_files, options)
 
   result_display(result_data, selected_files.size >= 2)
 end
 
-def create_result_data(selected_files)
+def option_initialize
+  options = {
+    opt_a: false
+  }
+  opt = OptionParser.new
+  opt.on('-a') { options[:opt_a] = true }
+  opt.parse!(ARGV)
+  options
+end
+
+def create_result_data(selected_files, options)
   result_data = initialize_result_data
   selected_files.sort.each do |filenames|
     data_type = file_type(filenames)
     case data_type
     when :directory_path
-      result_data[:sorted_directories] << create_sorted_directory(filenames)
+      result_data[:sorted_directories] << create_sorted_directory(filenames, options[:opt_a])
     when :file_path
       result_data[:file_results] << filenames
     when :invalid
@@ -46,8 +60,12 @@ def file_type(filenames)
   end
 end
 
-def create_sorted_directory(filenames)
-  directory_files = Dir.glob("#{filenames}/*").map { File.basename(_1) }
+def create_sorted_directory(filenames, opt_a)
+  directory_files = if opt_a
+                      Dir.glob("#{filenames}/*", File::FNM_DOTMATCH).map { File.basename(_1) }
+                    else
+                      Dir.glob("#{filenames}/*").map { File.basename(_1) }
+                    end
   directory_name = filenames
 
   row_count = calculate_row_count(directory_files)
