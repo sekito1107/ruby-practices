@@ -6,7 +6,7 @@ require 'optparse'
 DISPLAY_COLUMNS_COUNT = 3
 
 def run
-  options = fetch_options!
+  options = fetch_options!(ARGV)
 
   selected_files = ARGV.empty? ? ['.'] : ARGV
 
@@ -15,13 +15,13 @@ def run
   result_display(result_data, selected_files.size >= 2)
 end
 
-def fetch_options!
+def fetch_options!(command_line_argument)
   options = {
     a: false
   }
   opt = OptionParser.new
   opt.on('-a') { options[:a] = true }
-  opt.parse!
+  opt.parse!(command_line_argument)
   options
 end
 
