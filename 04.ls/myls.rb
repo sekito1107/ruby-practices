@@ -6,7 +6,7 @@ require 'optparse'
 DISPLAY_COLUMNS_COUNT = 3
 
 def run
-  options = option_initialize
+  options = fetch_options!
 
   selected_files = ARGV.empty? ? ['.'] : ARGV
 
@@ -15,13 +15,13 @@ def run
   result_display(result_data, selected_files.size >= 2)
 end
 
-def initialize_option
+def fetch_options!
   options = {
-    opt_a: false
+    a: false
   }
   opt = OptionParser.new
-  opt.on('-a') { options[:opt_a] = true }
-  opt.parse!(ARGV)
+  opt.on('-a') { options[:a] = true }
+  opt.parse!
   options
 end
 
@@ -31,7 +31,7 @@ def create_result_data(selected_files, options)
     data_type = file_type(filenames)
     case data_type
     when :directory_path
-      result_data[:sorted_directories] << create_sorted_directory(filenames, options[:opt_a])
+      result_data[:sorted_directories] << create_sorted_directory(filenames, options[:a])
     when :file_path
       result_data[:file_results] << filenames
     when :invalid
@@ -60,12 +60,10 @@ def file_type(filenames)
   end
 end
 
-def create_sorted_directory(filenames, opt_a)
-  directory_files = if opt_a
-                      Dir.glob("#{filenames}/*", File::FNM_DOTMATCH).map { File.basename(_1) }
-                    else
-                      Dir.glob("#{filenames}/*").map { File.basename(_1) }
-                    end
+def create_sorted_directory(filenames, a)
+  glob_flags = a ? File::FNM_DOTMATCH : 0
+  directory_files = Dir.glob('*', glob_flags).map { File.basename(_1) }
+
   directory_name = filenames
 
   row_count = calculate_row_count(directory_files)
