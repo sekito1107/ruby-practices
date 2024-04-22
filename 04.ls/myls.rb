@@ -7,7 +7,6 @@ DISPLAY_COLUMNS_COUNT = 3
 
 def run
   options = fetch_options!(ARGV)
-
   selected_files = ARGV.empty? ? ['.'] : ARGV
 
   result_data = create_result_data(selected_files, options)
@@ -60,9 +59,9 @@ def file_type(filenames)
   end
 end
 
-def create_sorted_directory(filenames, a)
-  glob_flags = a ? File::FNM_DOTMATCH : 0
-  directory_files = Dir.glob('*', glob_flags).map { File.basename(_1) }
+def create_sorted_directory(filenames, opt_a)
+  glob_flags = opt_a ? File::FNM_DOTMATCH : 0
+  directory_files = Dir.glob("#{filenames}/*", glob_flags).map { File.basename(_1) }
 
   directory_name = filenames
 
