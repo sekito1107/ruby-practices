@@ -25,8 +25,8 @@ def fetch_options!(command_line_argument)
   options
 end
 
-def sort_selected_files(selected_files, opt_r)
-  opt_r ? selected_files.sort.reverse : selected_files.sort
+def sort_selected_files(selected_files, reverse_order)
+  reverse_order ? selected_files.sort.reverse : selected_files.sort
 end
 
 def create_result_data(selected_files, options)
@@ -64,14 +64,14 @@ def file_type(filenames)
   end
 end
 
-def create_sorted_directory(filenames, opt_r)
+def create_sorted_directory(filenames, reverse_order)
   directory_files = Dir.glob("#{filenames}/*").map { File.basename(_1) }
-  riverse_directory_files = directory_files.reverse if opt_r
+  directory_files = directory_files.reverse if reverse_order
 
   directory_name = filenames
 
   row_count = calculate_row_count(directory_files)
-  formatted_data = create_formatted_data(riverse_directory_files || directory_files, row_count)
+  formatted_data = create_formatted_data(directory_files, row_count)
 
   {
     directory_name:,
