@@ -8,29 +8,34 @@ DISPLAY_COLUMNS_COUNT = 3
 def run
   options = fetch_options!(ARGV)
   selected_files = ARGV.empty? ? ['.'] : ARGV
+  sorted_selected_files = sort_selected_files(selected_files, options[:r])
 
-  result_data = create_result_data(selected_files, options)
+  result_data = create_result_data(sorted_selected_files, options)
 
   result_display(result_data, selected_files.size >= 2)
 end
 
 def fetch_options!(command_line_argument)
   options = {
-    a: false
+    r: false
   }
   opt = OptionParser.new
-  opt.on('-a') { options[:a] = true }
+  opt.on('-r') { options[:r] = true }
   opt.parse!(command_line_argument)
   options
 end
 
+def sort_selected_files(selected_files, reverse_order)
+  reverse_order ? selected_files.sort.reverse : selected_files.sort
+end
+
 def create_result_data(selected_files, options)
   result_data = initialize_result_data
-  selected_files.sort.each do |filenames|
+  selected_files.each do |filenames|
     data_type = file_type(filenames)
     case data_type
     when :directory_path
-      result_data[:sorted_directories] << create_sorted_directory(filenames, options[:a])
+      result_data[:sorted_directories] << create_sorted_directory(filenames, options[:r])
     when :file_path
       result_data[:file_results] << filenames
     when :invalid
@@ -59,9 +64,9 @@ def file_type(filenames)
   end
 end
 
-def create_sorted_directory(filenames, opt_a)
-  glob_flags = opt_a ? File::FNM_DOTMATCH : 0
-  directory_files = Dir.glob("#{filenames}/*", glob_flags).map { File.basename(_1) }
+def create_sorted_directory(filenames, reverse_order)
+  directory_files = Dir.glob("#{filenames}/*").map { File.basename(_1) }
+  directory_files = directory_files.reverse if reverse_order
 
   directory_name = filenames
 
