@@ -124,7 +124,7 @@ def create_detail_dete(file_names, need_detail, base_directory = '')
     user_name: Etc.getpwuid(stat.uid).name,
     group_name: Etc.getgrgid(stat.gid).name,
     file_size: format('%4s', stat.size.to_s),
-    time_stamp: stat.mtime.strftime(' %-m月 %-d %H:%M').sub(/(\d+)月/, ' \1月').sub(/(?<=月\s)([1-9])(?!\d)/, ' \1'),
+    time_stamp: stat.mtime.strftime(' %_m月 %e %H:%M')
     file_name: file_names
   }
   file_info.values.join(' ')
