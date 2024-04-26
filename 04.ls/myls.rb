@@ -155,7 +155,7 @@ end
 
 def calc_directory_mbyte_size(file_name, base_directory)
   target_path = base_directory.empty? ? filename : "#{base_directory}/#{file_name}"
-  File.stat(target_path).size / 1000
+  File.stat(target_path).blocks / 2
 end
 
 def create_error_message(filenames)
