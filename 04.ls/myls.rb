@@ -61,7 +61,7 @@ def create_result_data(selected_files, options)
     when :directory_path
       result_data[:sorted_directories] << create_sorted_directory(filenames, options[:r], options[:l])
     when :file_path
-      result_data[:file_results] << create_detail_dete(filenames, options[:l])
+      result_data[:file_results] << create_file_metadata(filenames, options[:l])
     when :invalid
       result_data[:error_messages] << create_error_message(filenames)
     end
@@ -99,7 +99,7 @@ def create_sorted_directory(filenames, reverse_order, need_detail)
   directory_kbyte_size = 0
   if need_detail
     directory_files.each do |target_file|
-      formatted_data << create_detail_dete(target_file, need_detail, filenames)
+      formatted_data << create_file_metadata(target_file, need_detail, filenames)
       directory_kbyte_size += calc_directory_mbyte_size(target_file, filenames)
     end
   else
@@ -113,7 +113,7 @@ def create_sorted_directory(filenames, reverse_order, need_detail)
   }
 end
 
-def create_detail_dete(file_names, need_detail, base_directory = '')
+def create_file_metadata(file_names, need_detail, base_directory = '')
   return file_names unless need_detail
 
   target_path = base_directory.empty? ? file_names : "#{base_directory}/#{file_names}"
