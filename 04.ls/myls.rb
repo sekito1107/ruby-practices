@@ -143,12 +143,12 @@ end
 def apply_special_permissions(permissions, special_permissions)
   modified_permissions = permissions.dup
   case special_permissions
-  when 1
-    modified_permissions[8] = modified_permissions[8] == x ? 't' : 'T'
-  when 2
-    modified_permissions[5] = modified_permissions[5] == x ? 's' : 'S'
-  when 3
-    modified_permissions[2] = modified_permissions[2] == x ? 's' : 'S'
+  when '1'
+    modified_permissions[9] = modified_permissions[9] == 'x' ? 't' : 'T'
+  when '2'
+    modified_permissions[6] = modified_permissions[6] == 'x' ? 's' : 'S'
+  when '3'
+    modified_permissions[3] = modified_permissions[3] == 'x' ? 's' : 'S'
   end
   modified_permissions
 end
