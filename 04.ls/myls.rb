@@ -118,16 +118,16 @@ def create_detail_dete(file_names, need_detail, base_directory = '')
 
   target_path = base_directory.empty? ? file_names : "#{base_directory}/#{file_names}"
   stat = File.stat(target_path)
-  file_info = {
-    permissions: retrieve_permisson(format('%06o', stat.mode)),
-    link_count: stat.nlink.to_s,
-    user_name: Etc.getpwuid(stat.uid).name,
-    group_name: Etc.getgrgid(stat.gid).name,
-    file_size: format('%4s', stat.size.to_s),
-    time_stamp: stat.mtime.strftime(' %_m月 %e %H:%M')
-    file_name: file_names
-  }
-  file_info.values.join(' ')
+
+  [
+    retrieve_permisson(format('%06o', stat.mode)), # permission
+    stat.nlink.to_s, # link_count
+    Etc.getpwuid(stat.uid).name, # user_name
+    Etc.getgrgid(stat.gid).name, # group_name
+    format('%4s', stat.size.to_s), # file_size
+    stat.mtime.strftime(' %_m月 %e %H:%M'), # time_stamp
+    file_names # file_name
+  ].join(' ')
 end
 
 def retrieve_permisson(file_deta)
