@@ -88,18 +88,18 @@ def check_file_type(filenames)
   end
 end
 
-def create_sorted_directory(filenames, reverse_order, detail_order)
+def create_sorted_directory(filenames, reverse_order, need_detail)
   directory_files = Dir.glob("#{filenames}/*").map { File.basename(_1) }
   directory_files = directory_files.reverse if reverse_order
 
   directory_name = filenames
 
-  row_count = calculate_row_count(directory_files) unless detail_order
+  row_count = calculate_row_count(directory_files) unless need_detail
   formatted_data = []
   directory_kbyte_size = 0
-  if detail_order
+  if need_detail
     directory_files.each do |target_file|
-      formatted_data << create_detail_dete(target_file, detail_order, filenames)
+      formatted_data << create_detail_dete(target_file, need_detail, filenames)
       directory_kbyte_size += calc_directory_mbyte_size(target_file, filenames)
     end
   else
@@ -113,8 +113,8 @@ def create_sorted_directory(filenames, reverse_order, detail_order)
   }
 end
 
-def create_detail_dete(file_names, detail_order, base_directory = '')
-  return file_names unless detail_order
+def create_detail_dete(file_names, need_detail, base_directory = '')
+  return file_names unless need_detail
 
   target_path = base_directory.empty? ? file_names : "#{base_directory}/#{file_names}"
   stat = File.stat(target_path)
@@ -124,7 +124,7 @@ def create_detail_dete(file_names, detail_order, base_directory = '')
     user_name: Etc.getpwuid(stat.uid).name,
     group_name: Etc.getgrgid(stat.gid).name,
     file_size: format('%4s', stat.size.to_s),
-    time_stamp: stat.mtime.strftime('%-m月 %-d %H:%M').sub(/(\d+)月/, ' \1月').sub(/(?<=月\s)([1-9])(?!\d)/, ' \1'),
+    time_stamp: stat.mtime.strftime(' %-m月 %-d %H:%M').sub(/(\d+)月/, ' \1月').sub(/(?<=月\s)([1-9])(?!\d)/, ' \1'),
     file_name: file_names
   }
   file_info.values.join(' ')
@@ -173,18 +173,18 @@ def create_formatted_data(directory_files, row_count)
   formatted_data
 end
 
-def result_display(result_data, multiple_files_received, detail_order)
+def result_display(result_data, multiple_files_received, need_detail)
   display_error_messages(result_data[:error_messages]) unless result_data[:error_messages].empty?
-  display_file_results(result_data[:file_results], !result_data[:sorted_directories].empty?, detail_order) unless result_data[:file_results].empty?
-  directory_results(result_data[:sorted_directories], multiple_files_received, detail_order) unless result_data[:sorted_directories].empty?
+  display_file_results(result_data[:file_results], !result_data[:sorted_directories].empty?, need_detail) unless result_data[:file_results].empty?
+  directory_results(result_data[:sorted_directories], multiple_files_received, need_detail) unless result_data[:sorted_directories].empty?
 end
 
 def display_error_messages(error_messages)
   error_messages.each { puts _1 }
 end
 
-def display_file_results(file_results, need_additional_line_break, detail_order)
-  if detail_order
+def display_file_results(file_results, need_additional_line_break, need_detail)
+  if need_detail
     puts file_results
   else
     puts file_results.join(' ')
@@ -192,10 +192,10 @@ def display_file_results(file_results, need_additional_line_break, detail_order)
   puts if need_additional_line_break
 end
 
-def directory_results(sorted_directories, multiple_files_received, detail_order)
+def directory_results(sorted_directories, multiple_files_received, need_detail)
   sorted_directories.each.with_index do |directory_data, directory_number|
     display_file_name(directory_data[:directory_name], !directory_data[:formatted_data].all?([''])) if multiple_files_received
-    if detail_order
+    if need_detail
       display_detail_directory_results(directory_data[:directory_kbyte_size], directory_data[:formatted_data])
     else
       display_default_directory_results(directory_data[:formatted_data], directory_data[:row_count])
