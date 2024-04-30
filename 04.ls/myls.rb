@@ -40,11 +40,13 @@ end
 def fetch_options!(command_line_argument)
   options = {
     r: false,
-    l: false
+    l: false,
+    a: false
   }
   opt = OptionParser.new
   opt.on('-r') { options[:r] = true }
   opt.on('-l') { options[:l] = true }
+  opt.on('-a') { options[:a] = true }
   opt.parse!(command_line_argument)
   options
 end
@@ -59,7 +61,7 @@ def create_result_data(selected_files, options)
     data_type = check_file_type(filenames)
     case data_type
     when :directory_path
-      result_data[:sorted_directories] << create_sorted_directory(filenames, options[:r], options[:l])
+      result_data[:sorted_directories] << create_sorted_directory(filenames, options[:r], options[:l], options[:a])
     when :file_path
       result_data[:file_results] << create_file_metadata(filenames, options[:l])
     when :invalid
@@ -88,8 +90,9 @@ def check_file_type(filenames)
   end
 end
 
-def create_sorted_directory(filenames, reverse_order, need_detail)
-  directory_files = Dir.glob("#{filenames}/*").map { File.basename(_1) }
+def create_sorted_directory(filenames, reverse_order, need_detail, show_all)
+  glob_flags = show_all ? File::FNM_DOTMATCH : 0
+  directory_files = Dir.glob("#{filenames}/*", glob_flags).map { File.basename(_1) }
   directory_files = directory_files.reverse if reverse_order
 
   directory_name = filenames
