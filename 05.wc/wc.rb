@@ -94,7 +94,7 @@ end
 def calculate_length(file_paths, count_data)
   contains_directory = file_paths.any? { |file_path| File.directory?(file_path) }
   length = count_data[:char_count].to_s.length
-  contains_directory || $stdin && length < 7 ? 7 : length
+  contains_directory || !$stdin.tty? && length < 7 ? 7 : length
 end
 
 def format_count_data(length, file_data, options)
