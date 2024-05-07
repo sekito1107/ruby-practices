@@ -5,11 +5,11 @@ require 'optparse'
 
 def main
   options, file_paths = fetch_options!(ARGV)
-  count_deta = file_paths.empty? ? count_stdin($stdin) : count_files(file_paths, file_paths.size > 1)
-  return if count_deta.empty?
+  count_data = file_paths.empty? ? count_stdin($stdin) : count_files(file_paths, file_paths.size > 1)
+  return if count_data.empty?
 
-  length = calculate_length(file_paths, count_deta[-1]) if count_deta
-  puts(count_deta.map { |deta| format_count_deta(length, deta, options) })
+  length = calculate_length(file_paths, count_data[-1]) if count_data
+  puts(count_data.map { |data| format_count_data(length, data, options) })
 end
 
 def fetch_options!(command_line_argument)
@@ -34,24 +34,24 @@ def fetch_options!(command_line_argument)
 end
 
 def count_stdin(content)
-  [create_count_deta(content.read, nil)]
+  [create_count_data(content.read, nil)]
 end
 
 def count_files(file_paths, multiple_files)
-  count_deta = file_paths.map do |file_path|
+  count_data = file_paths.map do |file_path|
     if File.file?(file_path)
-      create_count_deta(File.read(file_path), file_path)
+      create_count_data(File.read(file_path), file_path)
     elsif File.directory?(file_path)
-      dammy_deta(file_path)
+      directory_data(file_path)
     else
       create_error_messages(file_path)
     end
   end
-  count_deta << create_sum_deta(count_deta.compact) if multiple_files
-  count_deta.compact
+  count_data << create_sum_data(count_data.compact) if multiple_files
+  count_data.compact
 end
 
-def create_count_deta(content, name)
+def create_count_data(content, name)
   {
     name:,
     line_count: content.split("\n").count,
@@ -61,7 +61,7 @@ def create_count_deta(content, name)
   }
 end
 
-def dammy_deta(name)
+def directory_data(name)
   {
     name:,
     line_count: 0,
@@ -81,34 +81,34 @@ def create_error_messages(file_path)
   }
 end
 
-def create_sum_deta(count_deta)
+def create_sum_data(count_data)
   {
     name: '合計',
-    line_count: count_deta.sum { |deta| deta[:line_count] || 0 },
-    word_count: count_deta.sum { |deta| deta[:word_count] || 0 },
-    char_count: count_deta.sum { |deta| deta[:char_count] || 0 },
+    line_count: count_data.sum { |data| data[:line_count] || 0 },
+    word_count: count_data.sum { |data| data[:word_count] || 0 },
+    char_count: count_data.sum { |data| data[:char_count] || 0 },
     error_message: nil
   }
 end
 
-def calculate_length(file_paths, count_deta)
+def calculate_length(file_paths, count_data)
   contains_directory = file_paths.any? { |file_path| File.directory?(file_path) }
-  length = count_deta[:char_count].to_s.length
+  length = count_data[:char_count].to_s.length
   contains_directory || $stdin && length < 7 ? 7 : length
 end
 
-def format_count_deta(length, file_deta, options)
-  return file_deta[:error_message] if file_deta[:error_message]
+def format_count_data(length, file_data, options)
+  return file_data[:error_message] if file_data[:error_message]
 
-  name = file_deta[:name]
-  count_deta_list = []
-  count_deta_list << file_deta[:line_count] if options[:line]
-  count_deta_list << file_deta[:word_count] if options[:word]
-  count_deta_list << file_deta[:char_count] if options[:char]
-  count_deta_list = count_deta_list.map { |deta| deta.to_s.rjust(length) }
-  return count_deta_list.join(' ') unless name
+  name = file_data[:name]
+  count_data_list = []
+  count_data_list << file_data[:line_count] if options[:line]
+  count_data_list << file_data[:word_count] if options[:word]
+  count_data_list << file_data[:char_count] if options[:char]
+  count_data_list = count_data_list.map { |data| data.to_s.rjust(length) }
+  return count_data_list.join(' ') unless name
 
-  File.directory?(name) ? create_directory_message(name) + [count_deta_list, name].join(' ') : [count_deta_list, name].join(' ')
+  File.directory?(name) ? create_directory_message(name) + [count_data_list, name].join(' ') : [count_data_list, name].join(' ')
 end
 
 def create_directory_message(directory_name)
