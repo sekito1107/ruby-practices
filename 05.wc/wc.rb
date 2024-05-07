@@ -52,56 +52,41 @@ def count_files(file_paths, multiple_files)
 end
 
 def create_count_deta(content, name)
-  line_count = content.split("\n").count
-  word_count = content.split(/\s+/).count
-  char_count = content.bytesize
   {
     name:,
-    line_count:,
-    word_count:,
-    char_count:,
+    line_count: content.split("\n").count,
+    word_count: content.split(/\s+/).count,
+    char_count: content.bytesize,
     error_message: nil
   }
 end
 
 def dammy_deta(name)
-  line_count = 0
-  word_count = 0
-  char_count = 0
-
   {
     name:,
-    line_count:,
-    word_count:,
-    char_count:,
+    line_count: 0,
+    word_count: 0,
+    char_count: 0,
     error_message: nil
   }
 end
 
 def create_error_messages(file_path)
-  name = nil
-  line_count = nil
-  word_count = nil
-  char_count = nil
   {
-    name:,
-    line_count:,
-    word_count:,
-    char_count:,
+    name: nil,
+    line_count: nil,
+    word_count: nil,
+    char_count: nil,
     error_message: "wc: #{file_path}: そのようなファイルやディレクトリはありません"
   }
 end
 
 def create_sum_deta(count_deta)
-  line_count = count_deta.sum { |deta| deta[:line_count] || 0 }
-  word_count = count_deta.sum { |deta| deta[:word_count] || 0 }
-  char_count = count_deta.sum { |deta| deta[:char_count] || 0 }
-
   {
     name: '合計',
-    line_count:,
-    word_count:,
-    char_count:,
+    line_count: count_deta.sum { |deta| deta[:line_count] || 0 },
+    word_count: count_deta.sum { |deta| deta[:word_count] || 0 },
+    char_count: count_deta.sum { |deta| deta[:char_count] || 0 },
     error_message: nil
   }
 end
