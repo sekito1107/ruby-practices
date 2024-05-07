@@ -55,7 +55,7 @@ def create_count_data(content, name)
   {
     name:,
     line_count: content.split("\n").count,
-    word_count: content.split(/\s+/).count,
+    word_count: content.scan(/\S+/).count,
     char_count: content.bytesize,
     error_message: nil
   }
