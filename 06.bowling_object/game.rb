@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 # frozen_string_literal: true
 
 require_relative 'frame'
@@ -21,18 +22,20 @@ class Game
     @special_frames << frame if frame.strike? || frame.spare?
   end
 
-  def calc_bonus(pins)
-    @special_frames.each do |special_frame|
-      special_frame.add_bonus(pins) if special_frame.need_bonus?
-    end
-  end
-
   def score
     result = 0
     @frames.each do |frame|
       result += frame.score
     end
     result
+  end
+
+  private
+
+  def calc_bonus(pins)
+    @special_frames.each do |special_frame|
+      special_frame.add_bonus(pins) if special_frame.need_bonus?
+    end
   end
 end
 
