@@ -7,7 +7,7 @@ class Game
   attr_reader :score_board
 
   def initialize
-    @frames = [Frame.new(1)]
+    @frames = [Frame.new(0)]
     @special_frames = []
     @score_board = ARGV[0].gsub('X', '10').split(',').map(&:to_i)
   end
@@ -18,7 +18,7 @@ class Game
     frame.record_shot(pins)
     return if frame.last_frame?
 
-    @frames << Frame.new(@frames.size + 1) if frame.finished?
+    @frames << Frame.new(@frames.size) if frame.finished?
     @special_frames << frame if frame.strike? || frame.spare?
   end
 

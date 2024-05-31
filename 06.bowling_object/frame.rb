@@ -44,6 +44,6 @@ class Frame
   end
 
   def last_frame?
-    @frame_number == 10
+    @frame_number == 9
   end
 end
