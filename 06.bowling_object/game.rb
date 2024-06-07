@@ -6,10 +6,14 @@ require_relative 'frame'
 class Game
   attr_reader :score_board
 
-  def initialize
+  def initialize(scores)
     @frames = [Frame.new(0)]
     @special_frames = []
-    @score_board = ARGV[0].gsub('X', '10').split(',').map(&:to_i)
+    @score_board = scores.gsub('X', '10').split(',').map(&:to_i)
+
+    @score_board.each do |shot_pin|
+      record_shot(shot_pin)
+    end
   end
 
   def record_shot(pins)
@@ -23,11 +27,7 @@ class Game
   end
 
   def score
-    result = 0
-    @frames.each do |frame|
-      result += frame.score
-    end
-    result
+    @frames.sum(&:score)
   end
 
   private
@@ -39,8 +39,5 @@ class Game
   end
 end
 
-game = Game.new
-game.score_board.each do |shot_pins|
-  game.record_shot(shot_pins)
-end
+game = Game.new(ARGV[0])
 puts game.score

@@ -3,44 +3,37 @@
 class Frame
   def initialize(frame_number)
     @frame_number = frame_number
-    @score = 0
-    @bonus = 0
+    @score = []
+    @bonus = []
     @shot_count = 0
-    @bonus_count = 0
   end
 
   def record_shot(pins)
-    @score += pins
-    @shot_count += 1
+    @score << pins
   end
 
   def strike?
-    @shot_count == 1 && @score == 10
+    @score.size == 1 && @score.sum == 10
   end
 
   def spare?
-    @shot_count == 2 && @score == 10
+    @score.size == 2 && @score.sum == 10
   end
 
   def finished?
-    @shot_count == 2 || @score == 10
+    @score.size == 2 || @score.sum == 10
   end
 
   def score
-    @score + @bonus
+    @score.sum + @bonus.sum
   end
 
   def need_bonus?
-    if strike?
-      @bonus_count < 2
-    elsif spare?
-      @bonus_count < 1
-    end
+    strike? && @bonus.size < 2 || spare? && @bonus.empty?
   end
 
   def add_bonus(pins)
-    @bonus += pins
-    @bonus_count += 1
+    @bonus << pins
   end
 
   def last_frame?
