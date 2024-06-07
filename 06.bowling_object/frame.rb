@@ -5,7 +5,6 @@ class Frame
     @frame_number = frame_number
     @score = []
     @bonus = []
-    @shot_count = 0
   end
 
   def record_shot(pins)
