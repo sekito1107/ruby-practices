@@ -4,7 +4,6 @@
 require_relative 'frame'
 
 class Game
-
   def initialize(scores)
     @frames = [Frame.new(0)]
     @special_frames = []
