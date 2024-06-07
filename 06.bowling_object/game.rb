@@ -4,7 +4,6 @@
 require_relative 'frame'
 
 class Game
-  attr_reader :score_board
 
   def initialize(scores)
     @frames = [Frame.new(0)]
