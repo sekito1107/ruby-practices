@@ -7,9 +7,8 @@ class Game
   def initialize(scores)
     @frames = [Frame.new(0)]
     @special_frames = []
-    @score_board = scores.gsub('X', '10').split(',').map(&:to_i)
 
-    @score_board.each do |shot_pin|
+    scores.gsub('X', '10').split(',').map(&:to_i).each do |shot_pin|
       record_shot(shot_pin)
     end
   end
