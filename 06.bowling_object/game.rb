@@ -14,10 +14,10 @@ class Game
     end
   end
 
-  def record_shot(pins)
-    calc_bonus(pins)
+  def record_shot(pin)
+    calc_bonus(pin)
     frame = @frames.last
-    frame.record_shot(pins)
+    frame.record_shot(pin)
     return if frame.last_frame?
 
     @frames << Frame.new(@frames.size) if frame.finished?
@@ -30,9 +30,9 @@ class Game
 
   private
 
-  def calc_bonus(pins)
+  def calc_bonus(pin)
     @special_frames.each do |special_frame|
-      special_frame.add_bonus(pins) if special_frame.need_bonus?
+      special_frame.add_bonus(pin) if special_frame.need_bonus?
     end
   end
 end

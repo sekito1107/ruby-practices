@@ -7,8 +7,8 @@ class Frame
     @bonus = []
   end
 
-  def record_shot(pins)
-    @score << pins
+  def record_shot(pin)
+    @score << pin
   end
 
   def strike?
@@ -31,8 +31,8 @@ class Frame
     strike? && @bonus.size < 2 || spare? && @bonus.empty?
   end
 
-  def add_bonus(pins)
-    @bonus << pins
+  def add_bonus(pin)
+    @bonus << pin
   end
 
   def last_frame?
