@@ -8,7 +8,7 @@ class Game
     @frames = [Frame.new(0)]
     @special_frames = []
 
-    scores.gsub('X', '10').split(',').map(&:to_i).each do |shot_score|
+    shot_scores.gsub('X', '10').split(',').map(&:to_i).each do |shot_score|
       record_shot(shot_score)
     end
   end
