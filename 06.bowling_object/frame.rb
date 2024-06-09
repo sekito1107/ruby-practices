@@ -26,7 +26,7 @@ class Frame
   def last_frame?
     @frame_number == 9
   end
-  
+
   private
 
   def strike?
