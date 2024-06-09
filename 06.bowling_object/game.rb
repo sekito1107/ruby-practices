@@ -6,7 +6,6 @@ require_relative 'frame'
 class Game
   def initialize(shot_scores)
     @frames = [Frame.new(0)]
-    @special_frames = []
 
     shot_scores.gsub('X', '10').split(',').map(&:to_i).each do |shot_score|
       record_shot(shot_score)
@@ -18,9 +17,7 @@ class Game
     frame = @frames.last
     frame.record_shot(shot_score)
     return if frame.last_frame?
-
-    @frames << Frame.new(@frames.size) if frame.finished?
-    @special_frames << frame if frame.strike? || frame.spare?
+    @frames << Frame.new(@frames.size)
   end
 
   def score
@@ -30,8 +27,8 @@ class Game
   private
 
   def calc_bonus(shot_score)
-    @special_frames.each do |special_frame|
-      special_frame.add_bonus(shot_score) if special_frame.need_bonus?
+    @frames.take(9).each do |frame|
+      frame.add_bonus(shot_score) if frame.need_bonus?
     end
   end
 end
