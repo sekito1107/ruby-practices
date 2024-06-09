@@ -17,6 +17,7 @@ class Game
     frame = @frames.last
     frame.record_shot(shot_score)
     return if frame.last_frame?
+
     @frames << Frame.new(@frames.size)
   end
 
