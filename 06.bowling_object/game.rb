@@ -28,7 +28,7 @@ class Game
 
   def apply_bonus(shot_score)
     @frames.take(9).each do |frame| # ボーナスが適用されるのは9フレーム目まで
-      frame.add_bonus(shot_score) if frame.need_bonus?
+      frame.add_bonus(shot_score)
     end
   end
 end
