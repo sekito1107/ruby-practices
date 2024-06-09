@@ -15,10 +15,6 @@ class Frame
     @scores.sum + @bonuses.sum
   end
 
-  def need_bonus?
-    strike? && @bonuses.size < 2 || spare? && @bonuses.empty?
-  end
-
   def add_bonus(shot_score)
     @bonuses << shot_score if strike? && @bonuses.size < 2 || spare? && @bonuses.empty?
   end
