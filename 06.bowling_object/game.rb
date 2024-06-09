@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require_relative 'frame'
+require 'debug'
 
 class Game
   def initialize(shot_scores)
@@ -22,9 +23,7 @@ class Game
     apply_bonus(shot_score)
     frame = @frames.last
     frame.record_shot(shot_score)
-    return if frame.last_frame?
-
-    @frames << Frame.new(@frames.size)
+    @frames << Frame.new(@frames.size) if frame.finished?
   end
 
   def apply_bonus(shot_score)
