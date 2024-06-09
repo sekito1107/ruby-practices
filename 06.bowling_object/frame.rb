@@ -19,12 +19,8 @@ class Frame
     @bonuses << shot_score if strike? && @bonuses.size < 2 || spare? && @bonuses.empty?
   end
 
-  def last_frame?
-    @frame_number == 9
-  end
-
   def finished?
-    @scores.size == 2 || @scores.sum == 10 && @frame_number <= 9
+    (@scores.size == 2 || @scores.sum == 10) && @frame_number <= 9
   end
 
   private
