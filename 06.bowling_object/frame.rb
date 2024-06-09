@@ -11,18 +11,6 @@ class Frame
     @scores << shot_score
   end
 
-  def strike?
-    @scores.size == 1 && @scores.sum == 10
-  end
-
-  def spare?
-    @scores.size == 2 && @scores.sum == 10
-  end
-
-  def finished?
-    @scores.size == 2 || @scores.sum == 10
-  end
-
   def score
     @scores.sum + @bonuses.sum
   end
@@ -37,5 +25,19 @@ class Frame
 
   def last_frame?
     @frame_number == 9
+  end
+  
+  private
+
+  def strike?
+    @scores.size == 1 && @scores.sum == 10
+  end
+
+  def spare?
+    @scores.size == 2 && @scores.sum == 10
+  end
+
+  def finished?
+    @scores.size == 2 || @scores.sum == 10
   end
 end

@@ -12,8 +12,14 @@ class Game
     end
   end
 
+  def score
+    @frames.sum(&:score)
+  end
+
+  private
+
   def record_shot(shot_score)
-    calc_bonus(shot_score)
+    apply_bonus(shot_score)
     frame = @frames.last
     frame.record_shot(shot_score)
     return if frame.last_frame?
@@ -21,14 +27,8 @@ class Game
     @frames << Frame.new(@frames.size)
   end
 
-  def score
-    @frames.sum(&:score)
-  end
-
-  private
-
-  def calc_bonus(shot_score)
-    @frames.take(9).each do |frame|
+  def apply_bonus(shot_score)
+    @frames.take(9).each do |frame| # ボーナスが適用されるのは9フレーム目まで
       frame.add_bonus(shot_score) if frame.need_bonus?
     end
   end
