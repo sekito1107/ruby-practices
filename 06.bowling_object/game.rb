@@ -7,8 +7,8 @@ class Game
   def initialize(shot_scores)
     @frames = [Frame.new(0)]
 
-    shot_scores.gsub('X', '10').split(',').map(&:to_i).each do |shot_score|
-      record_shot(shot_score)
+    shot_scores.gsub('X', '10').split(',').each do |shot_score|
+      record_shot(shot_score.to_i)
     end
   end
 
