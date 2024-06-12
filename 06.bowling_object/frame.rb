@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Frame
+  attr_reader :frame_number
+
   def initialize(frame_number)
     @frame_number = frame_number
     @scores = []
