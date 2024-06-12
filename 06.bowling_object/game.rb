@@ -13,7 +13,7 @@ class Game
   end
 
   def score
-    @frames.sum(&:score)
+    @frames.sum(&:frame_score)
   end
 
   private
