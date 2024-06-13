@@ -22,16 +22,16 @@ class Frame
   end
 
   def finished?
-    (@shot_scores.size == 2 || @shot_scores.sum == 10) && @frame_number <= 9
+    (@shot_scores.size == 2 || strike?) && @frame_number <= 9
   end
 
   private
 
   def strike?
-    @shot_scores.size == 1 && @shot_scores.sum == 10
+    @shot_scores[0] == 10
   end
 
   def spare?
-    @shot_scores.size == 2 && @shot_scores.sum == 10
+    !strike? && @shot_scores.sum == 10
   end
 end
