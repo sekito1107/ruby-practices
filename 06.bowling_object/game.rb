@@ -27,7 +27,7 @@ class Game
 
   def apply_bonus(shot_score)
     @frames.each do |frame|
-      frame.add_bonus(shot_score) if frame.frame_number < 9
+      frame.add_bonus(shot_score)
     end
   end
 end

@@ -6,7 +6,7 @@ class Frame
   def initialize(frame_number)
     @frame_number = frame_number
     @shot_scores = []
-    @bonuses = []
+    @bonus_scores = []
   end
 
   def record_shot(shot_score)
@@ -14,11 +14,11 @@ class Frame
   end
 
   def frame_score
-    @shot_scores.sum + @bonuses.sum
+    @shot_scores.sum + @bonus_scores.sum
   end
 
   def add_bonus(shot_score)
-    @bonuses << shot_score if strike? && @bonuses.size < 2 || spare? && @bonuses.empty?
+    @bonus_scores << shot_score if (strike? && @bonus_scores.size < 2 || spare? && @bonus_scores.empty?) && frame_number < 9
   end
 
   def finished?
