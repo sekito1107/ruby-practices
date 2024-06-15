@@ -2,13 +2,15 @@
 # frozen_string_literal: true
 
 require_relative 'frame'
+require 'debug'
 
 class Game
   def initialize(shot_scores)
-    @frames = [Frame.new(0)]
+    @frames = []
 
     shot_scores.gsub('X', '10').split(',').each do |shot_score|
-      record_shot(shot_score.to_i)
+      frame = record_shot(shot_score.to_i)
+      frame.finished? ? @frames << frame : @tmp_frame = frame
     end
   end
 
@@ -20,14 +22,15 @@ class Game
 
   def record_shot(shot_score)
     apply_bonus(shot_score)
-    frame = @frames.last
+    frame = @tmp_frame.nil? ? Frame.new(@frames.size || 0) : @tmp_frame
     frame.record_shot(shot_score)
-    @frames << Frame.new(@frames.size) if frame.finished?
+    @tmp_frame = nil if frame.finished?
+    frame
   end
 
   def apply_bonus(shot_score)
     @frames.each do |frame|
-      frame.add_bonus(shot_score)
+      frame.add_bonus(shot_score) if frame.frame_number < 9
     end
   end
 end
