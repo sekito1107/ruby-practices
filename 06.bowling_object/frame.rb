@@ -22,7 +22,7 @@ class Frame
   end
 
   def finished?
-    (@shot_scores.size == 2 || strike?) && @frame_number <= 8 || @shot_scores.size == 3
+    (@shot_scores.size == 2 || strike?) && @frame_number <= 8
   end
 
   private
