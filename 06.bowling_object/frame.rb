@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Frame
-  attr_reader :frame_number
+  attr_reader :frame_number, :shot_scores
 
   def initialize(frame_number)
     @frame_number = frame_number

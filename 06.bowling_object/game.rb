@@ -5,12 +5,12 @@ require_relative 'frame'
 
 class Game
   def initialize(shot_scores)
-    @frames = [Frame.new(0)]
+    @frames = []
 
     shot_scores.gsub('X', '10').split(',').each do |shot_score|
       apply_bonus(shot_score.to_i)
       frame = create_frame_data(shot_score.to_i)
-      frame.finished? ? @frames[frame.frame_number] = frame : @frames << frame
+      @frames << frame if frame
     end
   end
 
@@ -21,9 +21,10 @@ class Game
   private
 
   def create_frame_data(shot_score)
-    frame = @frames.last.finished? ? Frame.new(@frames.size) : @frames.last
+    frame = Frame.new(0) if @frames.empty?
+    frame ||= @frames.last.finished? ? Frame.new(@frames.size) : @frames.last
     frame.record_shot(shot_score)
-    frame
+    frame if frame.shot_scores.size == 1
   end
 
   def apply_bonus(shot_score)
