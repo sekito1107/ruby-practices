@@ -10,15 +10,12 @@ class Frame
   end
 
   def record_shot(shot_score)
-    @shot_scores << shot_score
+    @bonus_scores << shot_score if (strike? && @bonus_scores.size < 2 || spare? && @bonus_scores.empty?) && frame_number < 9
+    @shot_scores << shot_score if !finished?
   end
 
   def frame_score
     @shot_scores.sum + @bonus_scores.sum
-  end
-
-  def add_bonus(shot_score)
-    @bonus_scores << shot_score if (strike? && @bonus_scores.size < 2 || spare? && @bonus_scores.empty?) && frame_number < 9
   end
 
   def finished?
