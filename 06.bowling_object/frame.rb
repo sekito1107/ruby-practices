@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class Frame
-  attr_reader :frame_number, :shot_scores
 
   def initialize(frame_number)
     @frame_number = frame_number
@@ -10,8 +9,8 @@ class Frame
   end
 
   def record_shot(shot_score)
-    @bonus_scores << shot_score if (strike? && @bonus_scores.size < 2 || spare? && @bonus_scores.empty?) && frame_number < 9
-    @shot_scores << shot_score if !finished?
+    @bonus_scores << shot_score if need_bonus?
+    @shot_scores << shot_score unless finished?
   end
 
   def frame_score
@@ -31,4 +30,9 @@ class Frame
   def spare?
     !strike? && @shot_scores.sum == 10
   end
+
+  def need_bonus?
+    (strike? && @bonus_scores.size < 2 || spare? && @bonus_scores.empty?) && @frame_number < 9
+  end
+  
 end
