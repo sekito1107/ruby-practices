@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class Frame
-
   def initialize(frame_number)
     @frame_number = frame_number
     @shot_scores = []
@@ -34,5 +33,4 @@ class Frame
   def need_bonus?
     (strike? && @bonus_scores.size < 2 || spare? && @bonus_scores.empty?) && @frame_number < 9
   end
-  
 end
