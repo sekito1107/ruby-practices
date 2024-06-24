@@ -4,7 +4,7 @@
 require_relative 'frame'
 
 class Game
-  def calc_score(shot_scores)
+  def self.calc_score(shot_scores)
     frames = []
     shot_scores.gsub('X', '10').split(',').each do |shot_score|
       frames << Frame.new(frames.size) if frames.empty? || frames.last.finished?
@@ -16,4 +16,4 @@ class Game
   end
 end
 
-puts Game.new.calc_score(ARGV[0])
+puts Game.calc_score(ARGV[0])
