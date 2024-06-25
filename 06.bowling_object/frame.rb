@@ -8,8 +8,9 @@ class Frame
   end
 
   def record_shot(shot_score)
-    @bonus_scores << shot_score if need_bonus?
-    @shot_scores << shot_score unless finished?
+    score = (shot_score == 'X') ? 10 : shot_score.to_i
+    @bonus_scores << score if need_bonus?
+    @shot_scores << score unless finished?
   end
 
   def frame_score
