@@ -7,10 +7,10 @@ class Frame
     @bonus_shots = []
   end
 
-  def record_shot(shot_score)
-    score = shot_score == 'X' ? 10 : shot_score.to_i
-    @bonus_shots << score if need_bonus?
-    @shots << score unless finished?
+  def record_shot(shot)
+    shot = shot == 'X' ? 10 : shot.to_i
+    @bonus_shots << shot if need_bonus?
+    @shots << shot unless finished?
   end
 
   def calc_score
