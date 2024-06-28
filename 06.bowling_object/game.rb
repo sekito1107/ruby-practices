@@ -4,15 +4,15 @@
 require_relative 'frame'
 
 class Game
-  def self.calc_score(shot_scores)
+  def self.calc_score(shots)
     frames = []
-    shot_scores.split(',').each do |shot_score|
+    shots.split(',').each do |shot_score|
       frames << Frame.new(frames.size) if frames.empty? || frames.last.finished?
       frames.each do |frame|
         frame.record_shot(shot_score)
       end
     end
-    frames.sum(&:frame_score)
+    frames.sum(&:calc_score)
   end
 end
 
